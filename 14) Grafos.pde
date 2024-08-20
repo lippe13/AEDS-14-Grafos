@@ -1,14 +1,16 @@
-// Definição da classe Grafo
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 class Grafo {
   int numVertices;
   int[][] matrizAdj;
-  PVector[] posicoes; // Posições das partículas (nós do grafo)
-  PVector[] velocidades; // Velocidades das partículas
-  float raio = 10; // Raio dos nós
-  float k = 0.001; // Constante da mola para a atração
-  float c = 3000; // Constante de repulsão
+  PVector[] posicoes;
+  PVector[] velocidades;
+  float raio = 10;
+  float k = 0.001;
+  float c = 3000;
 
-  // Construtor da classe Grafo
   Grafo(int numVertices) {
     this.numVertices = numVertices;
     matrizAdj = new int[numVertices][numVertices];
@@ -25,19 +27,16 @@ class Grafo {
     inicializarPosicoes();
   }
 
-  // Adiciona uma aresta entre dois vértices
   void adicionarAresta(int i, int j) {
     matrizAdj[i][j] = 1;
-    matrizAdj[j][i] = 1; // Para grafos não direcionados
+    matrizAdj[j][i] = 1;
   }
 
-  // Adiciona uma aresta entre dois vértices
   void adicionarAresta(int i, int j, int peso) {
     matrizAdj[i][j] = peso;
-    matrizAdj[j][i] = peso; // Para grafos não direcionados
+    matrizAdj[j][i] = peso;
   }
 
-  // Inicializa as posições das partículas em um círculo
   void inicializarPosicoes() {
     float angulo = TWO_PI / (numVertices - 1);
     float raioCirculo = min(width, height) / 3;
@@ -47,17 +46,14 @@ class Grafo {
       posicoes[i] = new PVector(x, y);
       velocidades[i] = new PVector(0, 0);
     }
-    // Posição fixa do vértice 0
     posicoes[0] = new PVector(width / 2, height / 2);
     velocidades[0] = new PVector(0, 0);
   }
 
-  // Atualiza as posições das partículas
   void atualizar() {
     for (int i = 1; i < numVertices; i++) {
       PVector forca = new PVector(0, 0);
 
-      // Força de repulsão
       for (int j = 0; j < numVertices; j++) {
         if (i != j) {
           PVector direcao = PVector.sub(posicoes[i], posicoes[j]);
@@ -71,7 +67,6 @@ class Grafo {
         }
       }
 
-      // Força de atração
       for (int j = 0; j < numVertices; j++) {
         if (matrizAdj[i][j] > 0) {
           PVector direcao = PVector.sub(posicoes[j], posicoes[i]);
@@ -85,20 +80,15 @@ class Grafo {
 
       velocidades[i].add(forca);
       posicoes[i].add(velocidades[i]);
-
-      // Reduz a velocidade para estabilizar a simulação
       velocidades[i].mult(0.5);
 
-      // Mantém as partículas dentro da tela
       if (posicoes[i].x < 0 || posicoes[i].x > width) velocidades[i].x *= -1;
       if (posicoes[i].y < 0 || posicoes[i].y > height) velocidades[i].y *= -1;
     }
   }
 
-  // Desenha o grafo
   void desenhar(int[] caminho) {
     textAlign(CENTER);
-    // Desenha as arestas
     strokeWeight(1);
     for (int i = 0; i < numVertices; i++) {
       for (int j = i + 1; j < numVertices; j++) {
@@ -121,7 +111,6 @@ class Grafo {
       }
     }
 
-    // Desenha os nós
     fill(255);
     stroke(0);
     strokeWeight(1);
@@ -133,7 +122,6 @@ class Grafo {
     }
   }
 
-  // Implementa o algoritmo de Dijkstra para encontrar o menor caminho
   int[] dijkstra(int origem, int destino) {
     int[] dist = new int[numVertices];
     int[] anterior = new int[numVertices];
@@ -167,7 +155,6 @@ class Grafo {
       }
     }
 
-    // Reconstrução do caminho
     List<Integer> caminho = new ArrayList<>();
     for (int v = destino; v != -1; v = anterior[v]) {
       caminho.add(v);
